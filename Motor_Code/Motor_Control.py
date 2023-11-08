@@ -7,10 +7,8 @@ class Motor:
     global fullstep_sequence
     global halfstep_sequence
     global c
-    global t
 
     c = 1
-    t = True
 
     fullstep_sequence = [[1,0,0,1],[1,1,0,0],[0,1,1,0],[0,0,1,1]]
     halfstep_sequence = [[1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
@@ -27,30 +25,36 @@ class Motor:
     
 
     def Slow(self, time = .02, CounterClockwise = False):
+        t = True
+
         if CounterClockwise == True:
             c = -1
 
-        while t == True:
+        while t:
             for i in range(len(halfstep_sequence)):
                 GPIO.output(self.pin_list, halfstep_sequence[c * i])
                 sleep(time)
 
 
     def Normal(self, time = .02, CounterClockwise = False):
+        t = True
+
         if CounterClockwise == True:
             c = -1
 
-        while t == True:
+        while t:
             for i in range(len(fullstep_sequence)):
                 GPIO.output(self.pin_list, fullstep_sequence[c * i])
                 sleep(time)
 
 
     def Fast(self, time = .01, CounterClockwise = False):
+        t = True    
+        
         if CounterClockwise == True:
             c = -1
 
-        while t == True:
+        while t:
             for i in range(len(fullstep_sequence)):
                 GPIO.output(self.pin_list, fullstep_sequence[c * i])
                 sleep(time)
