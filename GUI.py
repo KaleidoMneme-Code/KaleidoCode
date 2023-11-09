@@ -1,3 +1,9 @@
+import tkinter as tk
+
+# pyQT
+# kivy
+# multithreading
+
 # from LED_Code import LED_Control
 from Motor_Code import Motor_Control
 # from Camera_Code import Camera
