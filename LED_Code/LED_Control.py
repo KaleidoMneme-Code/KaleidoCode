@@ -30,4 +30,3 @@ class LED:
 
     def CleanUp(self):
         GPIO.cleanup()
-
