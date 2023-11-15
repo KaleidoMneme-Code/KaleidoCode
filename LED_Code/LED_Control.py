@@ -1,4 +1,4 @@
-import RPI.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 
@@ -6,8 +6,10 @@ class LED:
     def __init__(self, pin):
         GPIO.setup(pin, GPIO.OUT)
 
+
     def ConstantOn(self):
         GPIO.output(self.pin, 1)
+
 
     def PWM(self, freq, dc):
         global pwm
@@ -21,8 +23,11 @@ class LED:
     def ChangeDutyCycle(self, dc):
         pwm.ChangeDutyCycle(dc)
 
+
     def StopLED(self):
         pwm.stop()
         GPIO.output(self.pin, 0)
+
+    def CleanUp(self):
         GPIO.cleanup()
 
