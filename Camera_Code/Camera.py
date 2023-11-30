@@ -1,5 +1,8 @@
-from picamera import PiCamera #pip install picamera
+from picamera import PiCamera
+import picamera.array
 import time
+import tkinter as tk
+from PIL import Image, ImageTk
 import os
 
 class Camera:
@@ -34,7 +37,7 @@ class Camera:
         camera.start_preview(fullscreen=False, window=(100,20,300,400))
         while l:
             time.sleep(1)
-        
+    
 
     def Record(self, t = 20):
         camera.resolution = (1920, 1080)

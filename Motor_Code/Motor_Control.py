@@ -3,9 +3,6 @@ from time import sleep
 import sys
 
 sys.path.append("..")
-
-#import GUI
-
 from Thread_Code import Thread
 
 
@@ -35,7 +32,7 @@ class Motor:
         
         while not self.thread.Stopped():
             for i in range(len(halfstep_sequence)):
-                GPIO.output(self.pin_list, halfstep_sequence[1 * i])
+                GPIO.output(self.pin_list, halfstep_sequence[i * self.C])
                 sleep(time)
 
     def Normal(self, time = .02):
@@ -43,7 +40,7 @@ class Motor:
 
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[1 * i])
+                GPIO.output(self.pin_list, fullstep_sequence[i * self.C])
                 sleep(time)
 
     def Fast(self, time = .01):
@@ -51,7 +48,7 @@ class Motor:
         
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[1 * i])
+                GPIO.output(self.pin_list, fullstep_sequence[i * self.C])
                 sleep(time)
 
 

@@ -3,9 +3,6 @@ import time
 import sys
 
 sys.path.append("..")
-
-#import GUI
-
 from Thread_Code import Thread
 
 

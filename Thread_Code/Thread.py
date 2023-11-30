@@ -1,7 +1,7 @@
 import threading
 
 class Create_Thread(threading.Thread):
-    def __init__(self, target,args=None):
+    def __init__(self, target, args=None):
         self._stop_event = threading.Event()
         self.name = threading.Thread.__init__(self, target=target, args=(args))
 
