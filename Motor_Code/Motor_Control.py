@@ -13,7 +13,6 @@ class Motor:
     global fullstep_sequence
     global halfstep_sequence
 
-
     fullstep_sequence = [[1,0,0,1],[1,1,0,0],[0,1,1,0],[0,0,1,1]]
     halfstep_sequence = [[1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
                                    [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1]]
@@ -26,29 +25,28 @@ class Motor:
         self.pin_list = pin_list
         self.thread = Thread.Create_Thread(thread)
         self.C = C
-
-    def Slow(self, time = .02):
-        GPIO.setup(self.pin_list, GPIO.OUT)
         
+    def Slow(self, time = .015):
+        GPIO.setup(self.pin_list, GPIO.OUT)
         while not self.thread.Stopped():
-            for i in range(len(halfstep_sequence)):
-                GPIO.output(self.pin_list, halfstep_sequence[i * self.C])
+            for i in range(len(fullstep_sequence)):
+                GPIO.output(self.pin_list, fullstep_sequence[i])
                 sleep(time)
 
-    def Normal(self, time = .02):
+    def Normal(self, time = .01):
         GPIO.setup(self.pin_list, GPIO.OUT)
 
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[i * self.C])
+                GPIO.output(self.pin_list, fullstep_sequence[i])
                 sleep(time)
 
-    def Fast(self, time = .01):
+    def Fast(self, time = .005):
         GPIO.setup(self.pin_list, GPIO.OUT)
         
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[i * self.C])
+                GPIO.output(self.pin_list, fullstep_sequence[i])
                 sleep(time)
 
 

@@ -1,5 +1,10 @@
 import RPi.GPIO as GPIO
 from time import sleep
+import random
+import sys
+
+sys.path.append("..")
+from Thread_Code import Thread
 
 class LED:
     global f
@@ -8,7 +13,7 @@ class LED:
     f = 1000
     duty = 0
     
-    def __init__(self, Color1=13, Color2=16, Color3=26):
+    def __init__(self, Color1=13, Color2=16, Color3=26, thread=None):
         GPIO.setmode(GPIO.BCM)
 
         pin_list = [Color1, Color2, Color3]
@@ -24,32 +29,40 @@ class LED:
         self.pwm_Color2.start(duty)
         self.pwm_Color3.start(duty)
 
+        self.thread = Thread.Create_Thread(thread)
+
     def ConstantOn(self):
-        for dc in range (100,-1,-5):
-            self.pwm_Color1.ChangeDutyCycle(dc)
-            sleep (.1)
+
+
+        while not self.thread.Stopped():
+            r1,r2,r3 = (random.randrange(25,100,5) for x in range(3))
+            
+            for dc in range (r1,-1,-5):
+                self.pwm_Color1.ChangeDutyCycle(dc)
+                sleep (.1)
+            
+            for dc in range (0,r2+1,5):
+                self.pwm_Color3.ChangeDutyCycle(dc)
+                sleep (.1)
+
+            for dc in range (r3,-1,-5):
+                self.pwm_Color2.ChangeDutyCycle(dc)
+                sleep (.1)
+
+            for dc in range (0,r1+1,5):
+                self.pwm_Color1.ChangeDutyCycle(dc)
+                sleep (.1)
         
-        for dc in range (0,101,5):
-            self.pwm_Color3.ChangeDutyCycle(dc)
-            sleep (.1)
+            for dc in range (r2,-1,-5):
+                self.pwm_Color3.ChangeDutyCycle(dc)
+                sleep (.1)
 
-        for dc in range (100,-1,-5):
-            self.pwm_Color2.ChangeDutyCycle(dc)
-            sleep (.1)
-
-        for dc in range (0,101,5):
-            self.pwm_Color1.ChangeDutyCycle(dc)
-            sleep (.1)
-    
-        for dc in range (100,-1,-5):
-            self.pwm_Color3.ChangeDutyCycle(dc)
-            sleep (.1)
-
-        for dc in range (0,101,5):
-            self.pwm_Color2.ChangeDutyCycle(dc)
-            sleep (.1)
+            for dc in range (0,r3+1,5):
+                self.pwm_Color2.ChangeDutyCycle(dc)
+                sleep (.1)
             
     def StopLED(self):
+        self.thread.Stop()
         self.pwm_Color1.stop()
         self.pwm_Color2.stop()
         self.pwm_Color3.stop()
