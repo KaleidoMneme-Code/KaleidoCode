@@ -32,8 +32,6 @@ class LED:
         self.thread = Thread.Create_Thread(thread)
 
     def ConstantOn(self):
-
-
         while not self.thread.Stopped():
             r1,r2,r3 = (random.randrange(25,100,5) for x in range(3))
             
@@ -66,7 +64,7 @@ class LED:
         self.pwm_Color1.stop()
         self.pwm_Color2.stop()
         self.pwm_Color3.stop()
-
+    
         GPIO.output(self.pin_list,0)
         GPIO.cleanup()
         

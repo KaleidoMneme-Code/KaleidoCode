@@ -1,22 +1,62 @@
+# pyshortcut -n KaleidoSatory -i /home/pi/Documents/KaleidoCode/Icons/Observatory.icns  /home/pi/Documents/KaleidoCode/PyQtGUI.py
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from Motor_Code import Motor_Control
-from Camera_Code import Camera
-# from LED_Code import LED_Control2
-from Thread_Code import Thread
 from picamera2.previews.qt import QGlPicamera2
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FileOutput
+from Motor_Code import Motor_Control
+from Camera_Code import Camera
+from LED_Code import LED_Control2
+from Thread_Code import Thread
 import time
+import os
+
+
+tutorial_app = QApplication([])
+tutorial_window = QWidget()
+
+tutorial_window.setWindowTitle("Tutorial")
+tutorial_window.setGeometry(500,200,500,250)
+tutorial_window.setFixedSize(500,250)
+
+frame = QFrame(tutorial_window)
+
+YES = QPushButton("Yes",parent=frame)
+NO = QPushButton("No", parent=frame)
+Question = QLabel("Would you like a tutorial?", parent=frame)
+
+YES.setGeometry(100,175,150,50)
+NO.setGeometry(260,175,150,50)
+
+Question.setGeometry(125,50,300,100)
+Question.setStyleSheet("font-size: 10pt; font-weight: bold")
+
+
+YES.clicked.connect(lambda: Open_Tutorial())
+NO.clicked.connect(lambda: Close_Tutorial())
+
+
+def Open_Tutorial():
+    os.startfile("/home/pi/Documents/KaleidoCode/Tutorial.txt")
+    tutorial_window.close()
+
+def Close_Tutorial():
+    tutorial_window.close()
+
+tutorial_window.show()
+tutorial_app.exec()
+
+
 
 Clockwise = True
 Recording = False
 
 Main_Motor = Motor_Control.Motor([17,27,22,23], lambda: Motor_Speed_Thread)
 # Sub_Motor = Motor_Control.Motor([1,1,1,1], lambda: Platform_Motor_Thread) #a1,b1,a2,b2
-# LED = LED_Control2.LED(thread=lambda: LED_Thread)
+#LED = LED_Control2.LED(thread=lambda: LED_Thread)
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration())
 picam2.configure(picam2.create_video_configuration(main={"size": (1280, 720)}))
@@ -27,9 +67,9 @@ Motor_Speed_Thread = Thread.Create_Thread(Main_Motor.ChangeSpeed, args=("Fast",)
 # LED_Thread = Thread.Create_Thread(LED.ConstantOn, args=())
 # LED_Thread.start()
 
-width = 1750
-height = 1000
-widget_width = 175
+width = 1750 #750
+height = 1000 # 500
+widget_width = 175 # 50
 widget_height = widget_width
 Icon_size = QSize(widget_width,widget_height)
 
@@ -40,7 +80,10 @@ window = QWidget()
 window.setWindowTitle("KaleidoSatory")
 window.setGeometry(500,200,width,height)
 window.setFixedSize(width,height)
-window.setWindowFlag(Qt.WindowCloseButtonHint, False)
+# window.setWindowFlag(Qt.WindowCloseButtonHint, False)
+window.setWindowFlags(window.windowFlags() | Qt.CustomizeWindowHint)
+window.setWindowFlags(window.windowFlags() & ~Qt.WindowCloseButtonHint)
+window.setWindowIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Observatory.png"))
 
 frame = QFrame(window)
 
@@ -63,16 +106,18 @@ BorderBottom.setStyleSheet("background-color: black")
 
 BorderLeft = QLabel("", parent=frame)
 BorderLeft.setGeometry(0, 0,1.35*widget_width, height-widget_height)
-BorderLeft.setStyleSheet("background-color: black")
+BorderLeft.setPixmap(QPixmap("/home/pi/Documents/KaleidoCode/Icons/Left_Border.png"))
+BorderLeft.setScaledContents(True)
 
 BorderRight = QLabel("", parent=frame)
 BorderRight.setGeometry(width-1.35*widget_width, 0,1.35*widget_width, height-widget_height)
-BorderRight.setStyleSheet("background-color: black")
+BorderRight.setPixmap(QPixmap("/home/pi/Documents/KaleidoCode/Icons/Right_Border.png"))
+BorderRight.setScaledContents(True)
 
-ButtonBorder = QLabel("KaleidoCam", parent=frame)
+ButtonBorder = QLabel("KaleidoSatory™", parent=frame)
 ButtonBorder.setGeometry(3*widget_width,height-widget_height,width-5*widget_width,widget_height)
-ButtonBorder.setStyleSheet("background-color: black; color: white; font-size: 75pt; font-weight: bold")
-ButtonBorder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+ButtonBorder.setPixmap(QPixmap("/home/pi/Documents/KaleidoCode/Icons/Lower_Border.png"))
+ButtonBorder.setScaledContents(True)
 
 Exit = QPushButton("Exit",parent=frame)
 Exit.setGeometry(width-widget_width,0,widget_width,.25*widget_height)
@@ -84,8 +129,8 @@ Slow.setGeometry(2*widget_width,height-widget_height,widget_width,widget_height)
 Normal.setGeometry(2*widget_width,height-widget_height,widget_width,widget_height)
 Fast.setGeometry(2*widget_width,height-widget_height,widget_width,widget_height)
 
-Photo.setGeometry(width-widget_width,height-widget_height,widget_width,widget_height)
-Record.setGeometry(width-2*widget_width,height-widget_height,widget_width,widget_height)
+Photo.setGeometry(width-2*widget_width,height-widget_height,widget_width,widget_height)
+Record.setGeometry(width-widget_width,height-widget_height,widget_width,widget_height)
 
 Reverse.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Reverse_2.png"))
 Reverse.setIconSize(Icon_size)
@@ -108,13 +153,12 @@ Record.setIconSize(Icon_size)
 Reverse.clicked.connect(lambda: [Reverse_Motor()])
 Pause.clicked.connect(lambda: [Pause_Motor()])
 
-
 Slow.clicked.connect(lambda: [Hide(Slow), Show(Normal), Speed(Normal,"Slow")])
 Normal.clicked.connect(lambda: [Hide(Normal), Show(Fast), Speed(Fast,"Normal")])
 Fast.clicked.connect(lambda: [Hide(Fast), Show(Slow), Speed(Slow,"Fast")])
 
 Record.clicked.connect(lambda: [Get_Video()])
-Photo.clicked.connect(lambda: Get_Picture())
+Photo.clicked.connect(lambda: [Get_Picture()])
 
 Exit.clicked.connect(lambda: [Close()])
 
@@ -141,8 +185,10 @@ def Reverse_Motor():
         Motor_Next_Speed_Thread_CurrentStop = True
 
     if Clockwise:
+        Reverse.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Reverse_Reverse.png"))
+        Reverse.setIconSize(Icon_size)
         time.sleep(.2)
-        Main_Motor.C = -1
+        Main_Motor.set_C(-1)
         Clockwise = False
 
         if Motor_Speed_Thread_CurrentStop:
@@ -150,10 +196,11 @@ def Reverse_Motor():
         elif Motor_Next_Speed_Thread_CurrentStop:
             Motor_Next_Speed_Thread.Begin()
 
-
     elif not Clockwise:
+        Reverse.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Reverse_2.png"))
+        Reverse.setIconSize(Icon_size)
         time.sleep(.2)
-        Main_Motor.C = 1
+        Main_Motor.set_C(1)
         Clockwise = True
 
         if Motor_Speed_Thread_CurrentStop:
@@ -212,20 +259,14 @@ def Get_Video():
         output = FileOutput("/home/pi/Documents/Videos/" + str(time.asctime()) + ".h264")
         picam2.start_encoder(encoder, output)
         Recording = True
+        Record.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Recording.png"))
+        Record.setIconSize(Icon_size)
     else:
         picam2.stop_encoder()
         Recording = False
-        # ADD DIFFERENT PHOTO AT LEAST
+        Record.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Record.png"))
+        Record.setIconSize(Icon_size)
     
-
-def Record_Timer():
-    Record.setEnabled(False)
-
-    for i in range(183,0,-1):
-        time.sleep(.1)
-
-    Record.setEnabled(True)
-
 
 def capture_done(job):
   result = picam2.wait(job)
@@ -236,10 +277,10 @@ def Close():
         Motor_Speed_Thread.Stop()
     elif lambda: Motor_Next_Speed_Thread.is_alive():
         Motor_Next_Speed_Thread.Stop()
-    elif lambda: Platform_Motor_Thread.is_alive():
-        Platform_Motor_Thread.Stop()
-    elif lambda: LED_Thread.is_alive():
-        LED_Thread.Stop()
+    #elif lambda: Platform_Motor_Thread.is_alive():
+        #Platform_Motor_Thread.Stop()
+    #elif lambda: LED_Thread.is_alive():
+        #LED_Thread.Stop()
 
     Main_Motor.CleanUp()
     #Sub_Motor.CleanUp()

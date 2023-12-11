@@ -1,0 +1,74 @@
+		    Welcome to KaleidoSatory™, a kaleidoscope-observatory hybrid!!
+
+      Made by the imaginative minds of Vik Diederich, Ethan Buenviaje, and Eric Schuster
+=================================================================================================
+
+			In this text file, we will explain each Button on the GUI
+-------------------------------------------------------------------------------------------------
+
+				     You will see 7 Buttons
+					       ↧
+            From left to right, the Buttons are Reverse, Pause, Speed, Photo, and Record.
+			   (Speed is split into Slow, Normal, and Fast)
+
+_________________________________________________________________________________________________
+
+The Reverse Button:
+			  Press this Button to reverse the motor's direction.
+				  Maybe, you'll see a new pattern!
+
+-------------------------------------------------------------------------------------------------
+
+The Pause Button:
+			  	Press this Button to stop the motor.
+			  Like a pattern? Then, stop the motor and observe it!
+
+-------------------------------------------------------------------------------------------------
+
+The Speed Buttons:
+
+				     Go the speed you want!
+		 (You can tell the speed by the amount of arrows the Button has)
+
+
+    ~ The Slow Speed Button:
+				
+	This Button has a logo of one arrow and is the slowest of the three speed Buttons.
+			  	Press this button to go a Normal Speed.
+
+
+    ~ The Normal Speed Button:
+
+			        This Button has a logo of two arrows
+		It is neither the fastest nor the slowest of the three speed Buttons.
+			  	  Press this Button to go a Fast Speed.
+
+
+    ~ The Fast Speed Button:
+
+	This Button has a logo of three arrows and is the fastest of the three speed Buttons.
+			  	  Press this Button to go a Slow Speed.
+
+-------------------------------------------------------------------------------------------------
+
+The Photo Button:
+			 	 Press this Button to take a Photo.
+			   Like a pattern? Take a Photo of it and share it!
+
+		    All Photos are saved in the Images Directory in the Pi's Documents.
+
+-------------------------------------------------------------------------------------------------
+
+The Record Button:
+			 	 Press this Button to record a Video.
+			      Record your screen for as long as you want!
+			    Press this Button again to stop recording a Video.
+
+		    All Videos are saved in the Videos Directory in the Pi's Documents.
+_________________________________________________________________________________________________
+
+
+   Now that you learn the Button's functions, have some fun and try to find some cool patterns.
+
+
+

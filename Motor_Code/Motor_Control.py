@@ -6,7 +6,6 @@ sys.path.append("..")
 from Thread_Code import Thread
 
 
-
 GPIO.setmode(GPIO.BCM)
 
 class Motor:
@@ -24,29 +23,30 @@ class Motor:
 
         self.pin_list = pin_list
         self.thread = Thread.Create_Thread(thread)
-        self.C = C
+        self.set_C(C)
         
+    def set_C(self,new_C):
+        self.C = lambda x: new_C * x
+
     def Slow(self, time = .015):
         GPIO.setup(self.pin_list, GPIO.OUT)
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[i])
+                GPIO.output(self.pin_list, fullstep_sequence[self.C(i)])
                 sleep(time)
 
     def Normal(self, time = .01):
         GPIO.setup(self.pin_list, GPIO.OUT)
-
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[i])
+                GPIO.output(self.pin_list, fullstep_sequence[self.C(i)])
                 sleep(time)
 
     def Fast(self, time = .005):
         GPIO.setup(self.pin_list, GPIO.OUT)
-        
         while not self.thread.Stopped():
             for i in range(len(fullstep_sequence)):
-                GPIO.output(self.pin_list, fullstep_sequence[i])
+                GPIO.output(self.pin_list, fullstep_sequence[self.C(i)])
                 sleep(time)
 
 
