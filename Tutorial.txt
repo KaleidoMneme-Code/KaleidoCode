@@ -7,7 +7,10 @@
 -------------------------------------------------------------------------------------------------
 
 				     You will see 7 Buttons
-					       ↧
+
+					       |
+					       V
+
             From left to right, the Buttons are Reverse, Pause, Speed, Photo, and Record.
 			   (Speed is split into Slow, Normal, and Fast)
 

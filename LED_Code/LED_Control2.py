@@ -64,7 +64,6 @@ class LED:
         self.pwm_Color1.stop()
         self.pwm_Color2.stop()
         self.pwm_Color3.stop()
-    
-        GPIO.output(self.pin_list,0)
+
         GPIO.cleanup()
         

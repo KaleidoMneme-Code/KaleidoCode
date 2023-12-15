@@ -1,5 +1,3 @@
-# pyshortcut -n KaleidoSatory -i /home/pi/Documents/KaleidoCode/Icons/Observatory.icns  /home/pi/Documents/KaleidoCode/PyQtGUI.py
-
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -11,8 +9,8 @@ from Motor_Code import Motor_Control
 from Camera_Code import Camera
 from LED_Code import LED_Control2
 from Thread_Code import Thread
+import sys, subprocess
 import time
-import os
 
 
 tutorial_app = QApplication([])
@@ -32,7 +30,7 @@ YES.setGeometry(100,175,150,50)
 NO.setGeometry(260,175,150,50)
 
 Question.setGeometry(125,50,300,100)
-Question.setStyleSheet("font-size: 10pt; font-weight: bold")
+Question.setStyleSheet("font-size: 15pt; font-weight: bold")
 
 
 YES.clicked.connect(lambda: Open_Tutorial())
@@ -40,32 +38,33 @@ NO.clicked.connect(lambda: Close_Tutorial())
 
 
 def Open_Tutorial():
-    os.startfile("/home/pi/Documents/KaleidoCode/Tutorial.txt")
+    opener = "open" if sys.platform == "darwin" else "xdg-open"
+    subprocess.run([opener, "/home/pi/Documents/KaleidoCode/Tutorial.txt"])
     tutorial_window.close()
+    time.sleep(2)
 
 def Close_Tutorial():
     tutorial_window.close()
+    time.sleep(2)
 
 tutorial_window.show()
 tutorial_app.exec()
 
 
-
+Speed_Counter = "Slow"
 Clockwise = True
 Recording = False
 
 Main_Motor = Motor_Control.Motor([17,27,22,23], lambda: Motor_Speed_Thread)
-# Sub_Motor = Motor_Control.Motor([1,1,1,1], lambda: Platform_Motor_Thread) #a1,b1,a2,b2
-#LED = LED_Control2.LED(thread=lambda: LED_Thread)
+Sub_Motor = Motor_Control.Motor([25,5,6,12], lambda: Platform_Motor_Thread) #a1,b1,a2,b2
+LED = LED_Control2.LED(thread=lambda: LED_Thread)
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration())
 picam2.configure(picam2.create_video_configuration(main={"size": (1280, 720)}))
 
-Motor_Speed_Thread = Thread.Create_Thread(Main_Motor.ChangeSpeed, args=("Fast",))
-# Platform_Motor_Thread = Thread.Create_Thread(Sub_Motor.Slow, args=())
-# Platform_Motor_Thread.start()
-# LED_Thread = Thread.Create_Thread(LED.ConstantOn, args=())
-# LED_Thread.start()
+Motor_Speed_Thread = Thread.Create_Thread(Main_Motor.ChangeSpeed, args=("Fast",1,))
+Platform_Motor_Thread = Thread.Create_Thread(Sub_Motor.Slow, args=())
+LED_Thread = Thread.Create_Thread(LED.ConstantOn, args=())
 
 width = 1750 #750
 height = 1000 # 500
@@ -80,9 +79,11 @@ window = QWidget()
 window.setWindowTitle("KaleidoSatory")
 window.setGeometry(500,200,width,height)
 window.setFixedSize(width,height)
+
 # window.setWindowFlag(Qt.WindowCloseButtonHint, False)
 window.setWindowFlags(window.windowFlags() | Qt.CustomizeWindowHint)
 window.setWindowFlags(window.windowFlags() & ~Qt.WindowCloseButtonHint)
+
 window.setWindowIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Observatory.png"))
 
 frame = QFrame(window)
@@ -102,7 +103,8 @@ Record = QPushButton("",parent=frame)
 
 BorderBottom = QLabel("", parent=frame)
 BorderBottom.setGeometry(0, height-widget_height-.5*widget_height, width,.52*widget_height)
-BorderBottom.setStyleSheet("background-color: black")
+BorderBottom.setPixmap(QPixmap("/home/pi/Documents/KaleidoCode/Icons/Upper_Border.png"))
+BorderBottom.setScaledContents(True)
 
 BorderLeft = QLabel("", parent=frame)
 BorderLeft.setGeometry(0, 0,1.35*widget_width, height-widget_height)
@@ -153,9 +155,9 @@ Record.setIconSize(Icon_size)
 Reverse.clicked.connect(lambda: [Reverse_Motor()])
 Pause.clicked.connect(lambda: [Pause_Motor()])
 
-Slow.clicked.connect(lambda: [Hide(Slow), Show(Normal), Speed(Normal,"Slow")])
-Normal.clicked.connect(lambda: [Hide(Normal), Show(Fast), Speed(Fast,"Normal")])
-Fast.clicked.connect(lambda: [Hide(Fast), Show(Slow), Speed(Slow,"Fast")])
+Slow.clicked.connect(lambda: [Hide(Slow), Show(Normal), Speed(Normal,"Slow",spin=1)])
+Normal.clicked.connect(lambda: [Hide(Normal), Show(Fast), Speed(Fast,"Normal",spin=1)])
+Fast.clicked.connect(lambda: [Hide(Fast), Show(Slow), Speed(Slow,"Fast",spin=1)])
 
 Record.clicked.connect(lambda: [Get_Video()])
 Photo.clicked.connect(lambda: [Get_Picture()])
@@ -187,8 +189,7 @@ def Reverse_Motor():
     if Clockwise:
         Reverse.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Reverse_Reverse.png"))
         Reverse.setIconSize(Icon_size)
-        time.sleep(.2)
-        Main_Motor.set_C(-1)
+        Speed(Reverse, Speed_Counter, spin=-1)
         Clockwise = False
 
         if Motor_Speed_Thread_CurrentStop:
@@ -200,7 +201,7 @@ def Reverse_Motor():
         Reverse.setIcon(QIcon("/home/pi/Documents/KaleidoCode/Icons/Reverse_2.png"))
         Reverse.setIconSize(Icon_size)
         time.sleep(.2)
-        Main_Motor.set_C(1)
+        Speed(Reverse, Speed_Counter, spin=1)
         Clockwise = True
 
         if Motor_Speed_Thread_CurrentStop:
@@ -218,6 +219,7 @@ def Pause_Motor():
     elif Motor_Next_Speed_Thread.is_alive():
         Motor_Next_Speed_Thread.Stop()
 
+
     Stop_Thread = Thread.Create_Thread(Main_Motor.StopMotor, args=())
 
     Stop_Thread.start()
@@ -225,8 +227,9 @@ def Pause_Motor():
     Stop_Thread.Stop()
 
 
-def Speed(button, speed):
+def Speed(button, speed, spin):
     global Motor_Next_Speed_Thread
+    global Speed_Counter
     
     if Motor_Speed_Thread.is_alive():
         Motor_Speed_Thread.Stop()
@@ -235,7 +238,8 @@ def Speed(button, speed):
 
 
     button.setEnabled(False)
-    Motor_Next_Speed_Thread = Thread.Create_Thread(Main_Motor.ChangeSpeed, args=(speed,))
+    Motor_Next_Speed_Thread = Thread.Create_Thread(Main_Motor.ChangeSpeed, args=(speed,spin,))
+    Speed_Counter = speed
     Motor_Next_Speed_Thread.Begin()
     Motor_Next_Speed_Thread.start()
     time.sleep(.3)
@@ -273,18 +277,18 @@ def capture_done(job):
   Photo.setEnabled(True)
 
 def Close():
-    if lambda: Motor_Speed_Thread.is_alive():
+    if Motor_Speed_Thread.is_alive():
         Motor_Speed_Thread.Stop()
+    elif Platform_Motor_Thread.is_alive():
+        Platform_Motor_Thread.Stop()
+    elif LED_Thread.is_alive():
+        LED_Thread.Stop()
     elif lambda: Motor_Next_Speed_Thread.is_alive():
         Motor_Next_Speed_Thread.Stop()
-    #elif lambda: Platform_Motor_Thread.is_alive():
-        #Platform_Motor_Thread.Stop()
-    #elif lambda: LED_Thread.is_alive():
-        #LED_Thread.Stop()
 
     Main_Motor.CleanUp()
-    #Sub_Motor.CleanUp()
-    #LED.StopLED()
+    Sub_Motor.CleanUp()
+    LED.StopLED()
     window.close()
 
 Normal.hide()
@@ -293,5 +297,7 @@ Fast.hide()
 picam2.start()
 window.show()
 Motor_Speed_Thread.start()
+Platform_Motor_Thread.start()
+LED_Thread.start()
 app.exec()
 
